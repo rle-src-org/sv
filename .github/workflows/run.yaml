@@ -1,0 +1,32 @@
+name: SV
+on:
+  push:
+    branches:
+      - v1.x
+  pull_request:
+jobs:
+  testing:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: ./
+
+  release:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: release-${{ github.ref }}
+    needs:
+      - testing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Release
+      #- name: Release this GitHub Action
+      #  uses: rle-src-org/rt@v1
